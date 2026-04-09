@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎮 School Robux Giveaway</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      padding: 15px;
+    }
+
+    .container {
+      max-width: 450px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .roblox-logo {
+      font-size: 36px;
+      font-weight: 900;
+      color: white;
+      text-shadow: 2px 2px 0 #ff2e2e, 4px 4px 0 #00000030;
+      letter-spacing: 2px;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      color: #b9bbbe;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .card {
+      background: #232838;
+      border-radius: 12px;
+      padding: 25px 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border: 1px solid #3a4055;
+      margin-bottom: 20px;
+    }
+
+    .robux-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: #00b06f;
+      padding: 12px;
+      border-radius: 50px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 0 #007a4d;
+    }
+
+    .robux-icon {
+      width: 30px;
+      height: 30px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #00b06f;
+      font-size: 18px;
+    }
+
+    .robux-text {
+      color: white;
+      font-weight: bold;
+      font-size: 22px;
+      letter-spacing: 1px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      color: #b9bbbe;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 15px 16px;
+      background: #1a1e2b;
+      border: 2px solid #3a4055;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: #00b06f;
+      background: #1e2433;
+    }
+
+    .input-field::placeholder {
+      color: #6c7180;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      background: #00b06f;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #007a4d;
+      transition: all 0.1s;
+      margin-top: 10px;
+    }
+
+    .submit-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #007a4d;
+    }
+
+    .submit-btn:disabled {
+      background: #4a5568;
+      box-shadow: 0 4px 0 #2d3748;
+      transform: none;
+      cursor: not-allowed;
+    }
+
+    .admin-section {
+      background: #1a1e2b;
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid #3a4055;
+    }
+
+    .admin-title {
+      color: #ff2e2e;
+      font-size: 14px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .admin-input {
+      width: 100%;
+      padding: 12px;
+      background: #232838;
+      border: 1px solid #3a4055;
+      border-radius: 6px;
+      color: white;
+      margin-bottom: 10px;
+    }
+
+    .admin-btn {
+      padding: 12px 16px;
+      background: #ff2e2e;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      box-shadow: 0 3px 0 #c41e1e;
+    }
+
+    .admin-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #c41e1e;
+    }
+
+    .admin-btn.secondary {
+      background: #4a5568;
+      box-shadow: 0 3px 0 #2d3748;
+    }
+
+    .status-message {
+      color: #00b06f;
+      font-size: 14px;
+      margin-top: 10px;
+      min-height: 20px;
+      padding: 8px;
+      border-radius: 4px;
+    }
+
+    .error-message {
+      color: #ff2e2e;
+      background: #ff2e2e20;
+      padding: 8px;
+      border-radius: 4px;
+    }
+
+    .success-message {
+      color: #00b06f;
+      background: #00b06f20;
+      padding: 8px;
+      border-radius: 4px;
+    }
+
+    .submissions-table {
+      width: 100%;
+      margin-top: 15px;
+      border-collapse: collapse;
+      color: white;
+      font-size: 13px;
+      display: none;
+    }
+
+    .submissions-table th {
+      text-align: left;
+      padding: 10px 5px;
+      border-bottom: 2px solid #3a4055;
+      color: #b9bbbe;
+    }
+
+    .submissions-table td {
+      padding: 8px 5px;
+      border-bottom: 1px solid #2a2f40;
+    }
+
+    .stats {
+      color: #00b06f;
+      font-size: 14px;
+      margin: 10px 0;
+      display: none;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #ffffff30;
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-left: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .debug-box {
+      background: #00000050;
+      border: 1px solid #ffaa00;
+      border-radius: 4px;
+      padding: 10px;
+      margin: 10px 0;
+      font-family: monospace;
+      font-size: 12px;
+      color: #ffaa00;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="roblox-logo">ROBLOX</div>
+      <div class="subtitle">School Giveaway Event</div>
+    </div>
+
+    <div class="card">
+      <div class="robux-badge">
+        <div class="robux-icon">R$</div>
+        <div class="robux-text">250 ROBUX GIVEAWAY</div>
+      </div>
+
+      <form id="entryForm">
+        <div class="form-group">
+          <label>👤 Roblox Username</label>
+          <input type="text" id="username" class="input-field" placeholder="e.g., Builderman" required>
+        </div>
+
+        <div class="form-group">
+          <label>🎮 Display Nickname</label>
+          <input type="text" id="nickname" class="input-field" placeholder="What should we call you?" required>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">ENTER GIVEAWAY</button>
+      </form>
+
+      <div id="formStatus" class="status-message"></div>
+    </div>
+
+    <div class="admin-section">
+      <div class="admin-title">
+        <span>🔐</span> ADMIN PANEL
+      </div>
+
+      <input type="email" id="adminEmail" class="admin-input" placeholder="Admin Email" value="">
+      <input type="password" id="adminPassword" class="admin-input" placeholder="Admin Password" value="">
+
+      <div>
+        <button class="admin-btn" onclick="adminLogin()">LOGIN</button>
+        <button class="admin-btn secondary" onclick="loadSubmissions()">VIEW ENTRIES</button>
+        <button class="admin-btn secondary" onclick="exportToExcel()">📊 EXPORT EXCEL</button>
+        <button class="admin-btn secondary" onclick="adminLogout()">LOGOUT</button>
+      </div>
+
+      <!-- Debug info will show here -->
+      <div id="debugInfo" class="debug-box">
+        🔍 Debug: Waiting for action...
+      </div>
+
+      <div id="adminStatus" class="status-message"></div>
+      <div id="stats" class="stats"></div>
+      <table class="submissions-table" id="submissionsTable">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Nickname</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // ⚠️ REPLACE THESE WITH YOUR ACTUAL SUPABASE CREDENTIALS!
+    const SUPABASE_URL = 'https://YOUR-PROJECT-ID.supabase.co';
+    const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY';
+
+    // Debug function
+    function debug(message, data = null) {
+      const debugDiv = document.getElementById('debugInfo');
+      let debugText = `🔍 ${message}`;
+      if (data) {
+        debugText += '\n' + JSON.stringify(data, null, 2);
+      }
+      debugDiv.innerHTML = debugText.replace(/\n/g, '<br>');
+      console.log(message, data);
+    }
+
+    // Initialize Supabase
+    let supabase;
+    try {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      debug('✅ Supabase initialized');
+    } catch (error) {
+      debug('❌ Supabase init failed: ' + error.message);
+    }
+
+    let currentSubmissions = [];
+
+    // Test connection on load
+    window.addEventListener('load', async () => {
+      debug('📡 Testing connection to Supabase...');
+      
+      try {
+        const { data, error } = await supabase.from('submissions').select('count', { count: 'exact', head: true });
+        
+        if (error) {
+          debug('❌ Connection test failed: ' + error.message, error);
+        } else {
+          debug('✅ Connected to Supabase successfully!');
+        }
+
+        // Check session
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          debug('🔓 Admin session active', session.user.email);
+          document.getElementById('adminStatus').innerHTML = '<span class="success-message">🔓 Admin logged in</span>';
+        } else {
+          debug('🔒 No active admin session');
+        }
+      } catch (error) {
+        debug('❌ Connection error: ' + error.message);
+      }
+    });
+
+    // Form submission
+    document.getElementById('entryForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value.trim();
+      const nickname = document.getElementById('nickname').value.trim();
+      const submitBtn = document.getElementById('submitBtn');
+      const statusDiv = document.getElementById('formStatus');
+      
+      if (!username || !nickname) {
+        statusDiv.innerHTML = '<span class="error-message">❌ Please fill all fields</span>';
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = 'SUBMITTING... <span class="spinner"></span>';
+      
+      debug('📤 Submitting form...', { username, nickname });
+
+      try {
+        const { data, error } = await supabase
+          .from('submissions')
+          .insert([{ 
+            roblox_username: username,
+            roblox_nickname: nickname
+          }])
+          .select();
+
+        if (error) {
+          debug('❌ Insert failed: ' + error.message, error);
+          throw error;
+        }
+
+        debug('✅ Entry added successfully!', data);
+        statusDiv.innerHTML = '<span class="success-message">✅ Success! You\'ve been entered!</span>';
+        document.getElementById('username').value = '';
+        document.getElementById('nickname').value = '';
+        submitBtn.innerHTML = '✓ ENTERED!';
+        
+        setTimeout(() => {
+          submitBtn.innerHTML = 'ENTER GIVEAWAY';
+          statusDiv.innerHTML = '';
+        }, 3000);
+
+      } catch (error) {
+        statusDiv.innerHTML = `<span class="error-message">❌ Error: ${error.message}</span>`;
+        submitBtn.innerHTML = 'ENTER GIVEAWAY';
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Admin login function
+    async function adminLogin() {
+      const email = document.getElementById('adminEmail').value.trim();
+      const password = document.getElementById('adminPassword').value.trim();
+      const statusDiv = document.getElementById('adminStatus');
+
+      if (!email || !password) {
+        statusDiv.innerHTML = '<span class="error-message">❌ Enter email and password</span>';
+        debug('❌ Login attempted with empty fields');
+        return;
+      }
+
+      statusDiv.innerHTML = 'Logging in... <span class="spinner"></span>';
+      debug('🔐 Attempting login...', { email });
+
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
+
+        if (error) {
+          debug('❌ Login error: ' + error.message, error);
+          throw error;
+        }
+
+        debug('✅ Login successful!', data);
+        statusDiv.innerHTML = '<span class="success-message">✅ Logged in successfully!</span>';
+        document.getElementById('adminEmail').value = '';
+        document.getElementById('adminPassword').value = '';
+        
+      } catch (error) {
+        statusDiv.innerHTML = `<span class="error-message">❌ Login failed: ${error.message}</span>`;
+        debug('❌ Login failed details:', { message: error.message, status: error.status });
+      }
+    }
+
+    // Load submissions
+    async function loadSubmissions() {
+      const statusDiv = document.getElementById('adminStatus');
+      const table = document.getElementById('submissionsTable');
+      const stats = document.getElementById('stats');
+      const tbody = document.getElementById('tableBody');
+
+      debug('📋 Checking session...');
+      
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        debug('❌ Session error: ' + sessionError.message);
+      }
+      
+      if (!session) {
+        statusDiv.innerHTML = '<span class="error-message">❌ Please login first</span>';
+        debug('❌ No active session - please login');
+        return;
+      }
+
+      debug('🔓 Session found, loading submissions...', { user: session.user.email });
+      statusDiv.innerHTML = 'Loading entries... <span class="spinner"></span>';
+
+      try {
+        const { data, error, count } = await supabase
+          .from('submissions')
+          .select('*', { count: 'exact' })
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          debug('❌ Query error: ' + error.message, error);
+          throw error;
+        }
+
+        currentSubmissions = data;
+        debug(`✅ Loaded ${data.length} submissions`, { count });
+        
+        stats.style.display = 'block';
+        stats.innerHTML = `📋 Total Entries: ${count}`;
+        
+        tbody.innerHTML = '';
+        data.forEach(entry => {
+          const row = tbody.insertRow();
+          const date = new Date(entry.created_at).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+          
+          row.innerHTML = `
+            <td>@${entry.roblox_username}</td>
+            <td>${entry.roblox_nickname}</td>
+            <td>${date}</td>
+          `;
+        });
+
+        table.style.display = 'table';
+        statusDiv.innerHTML = `<span class="success-message">✅ Loaded ${data.length} entries</span>`;
+
+      } catch (error) {
+        statusDiv.innerHTML = `<span class="error-message">❌ Error: ${error.message}</span>`;
+        debug('❌ Load failed: ' + error.message);
+      }
+    }
+
+    // Export to Excel
+    function exportToExcel() {
+      if (!currentSubmissions || currentSubmissions.length === 0) {
+        document.getElementById('adminStatus').innerHTML = 
+          '<span class="error-message">❌ Load entries first</span>';
+        debug('❌ Export attempted with no data');
+        return;
+      }
+
+      debug('📊 Exporting to Excel...', { count: currentSubmissions.length });
+
+      try {
+        const excelData = currentSubmissions.map(entry => ({
+          'Roblox Username': entry.roblox_username,
+          'Display Nickname': entry.roblox_nickname,
+          'Submission Date': new Date(entry.created_at).toLocaleString()
+        }));
+
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(excelData);
+        XLSX.utils.book_append_sheet(wb, ws, 'Roblox Entries');
+        
+        const date = new Date().toISOString().split('T')[0];
+        const filename = `roblox_entries_${date}.xlsx`;
+        
+        XLSX.writeFile(wb, filename);
+        
+        document.getElementById('adminStatus').innerHTML = 
+          '<span class="success-message">✅ Excel file downloaded!</span>';
+        debug('✅ Excel export successful', { filename });
+        
+      } catch (error) {
+        document.getElementById('adminStatus').innerHTML = 
+          `<span class="error-message">❌ Export failed: ${error.message}</span>`;
+        debug('❌ Export error: ' + error.message);
+      }
+    }
+
+    // Logout function
+    async function adminLogout() {
+      debug('🚪 Logging out...');
+      
+      const { error } = await supabase.auth.signOut();
+      
+      if (!error) {
+        document.getElementById('adminStatus').innerHTML = 
+          '<span class="success-message">✅ Logged out</span>';
+        document.getElementById('submissionsTable').style.display = 'none';
+        document.getElementById('stats').style.display = 'none';
+        currentSubmissions = [];
+        debug('✅ Logout successful');
+      } else {
+        debug('❌ Logout error: ' + error.message);
+      }
+    }
+  </script>
+</body>
+</html>
